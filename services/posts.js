@@ -1,9 +1,6 @@
 import Posts from "../modules/posts/Post.js"
 
-const findAll = async (req, res) => {
-    const page = Number(req.query.page) || 1
-    const pageSize = Number(req.query.pageSize) || 10
-
+const findAll = async (page, pageSize) => {
     const posts = await Posts.find()
         .skip((page - 1) * pageSize)
         .limit(pageSize)
@@ -11,18 +8,22 @@ const findAll = async (req, res) => {
     const totalPosts = await Posts.countDocuments()
     const totalPages = Math.ceil(totalPosts / pageSize)
 
-    res.status(200).json({
+    return {
         totalPosts,
         totalPages,
         items: posts
-    })
+    }
 }
 
 const findOne = async (id) => {
     return await Posts.findById(id)
 }
 
-const create = async (id) => {
+const findByAuthor = async (email) => {
+    return await Posts.find({ author: email })
+}
+
+const create = async (body) => {
     const newPost = new Posts(body)
     return await newPost.save()
 }
@@ -32,10 +33,23 @@ const updatePost = async (id, body) => {
     return await Posts.findByIdAndUpdate(id, body, options)
 }
 
+const deletePost = async (id) => {
+    return await Posts.findByIdAndDelete(id)
+}
+
+const filterBlog = async (title) => {
+    return await Posts.find({
+        title: { $regex: title, $options: "i" }
+    })
+}
+
 
 export default {
     findAll,
     findOne,
+    findByAuthor,
     create,
     updatePost,
+    deletePost,
+    filterBlog,
 }

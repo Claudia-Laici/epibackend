@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import postService from "../services/posts.js";
 import Author from "../modules/authors/Author.js";
 
 export async function getAllAuthors(req, res) {
@@ -73,5 +74,34 @@ export async function deleteAuthor(req, res) {
     res.status(200).json(author);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+}
+
+export async function getAuthorBlogPosts(req, res) {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "invalid id"
+      });
+    }
+
+    const author = await Author.findById(id);
+
+    if (!author) {
+      return res.status(404).json({
+        message: "Author not found"
+      });
+    }
+
+    const posts = await postService.findByAuthor(author.email);
+
+    res.status(200).json(posts);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
   }
 }

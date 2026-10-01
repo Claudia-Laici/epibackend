@@ -37,7 +37,11 @@ const PostSchema = new mongoose.Schema({
         type: String,
         required: false,
         default: 'No Author'
-    }
+    },
+    content: {
+    type: String,
+    required: true
+}
 
 }, { timestamps: true, strict: true })
 

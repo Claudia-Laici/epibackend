@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dns from "node:dns";
+import cors from "cors";
 import "dotenv/config";
 
 import AuthorRouter from "./routes/authors.js";
@@ -9,6 +10,7 @@ import PostsRouter from "./routes/posts.js";
 dns.setServers(["8.8.8.8"]);
 
 const server = express();
+server.use(cors());
 
 server.use(express.json());
 
@@ -27,6 +29,7 @@ server.get("/", (req, res) => {
 
 server.use("/authors", AuthorRouter);
 server.use("/posts", PostsRouter);
+server.use("/blogPosts", PostsRouter);
 
 server.listen(process.env.PORT, () => {
     console.log(`Server up and running on port ${process.env.PORT}`);
