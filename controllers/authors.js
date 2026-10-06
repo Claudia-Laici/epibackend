@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import postService from "../services/posts.js";
 import Author from "../modules/authors/Author.js";
+import sendGrid from "@sendgrid/mail"
 
 export async function getAllAuthors(req, res) {
   try {
@@ -14,8 +15,21 @@ export async function getAllAuthors(req, res) {
 export async function createAuthors(req, res) {
   try {
     const { nome, cognome, email, dataDiNascita, avatar } = req.body;
+
     const author = new Author({ nome, cognome, email, dataDiNascita, avatar });
+
     const savedAuthor = await author.save();
+
+    sendGrid.setApiKey(process.env.SENDGRID_API_KEY)
+    const msg = {
+      to: author.email,
+       from: process.env.SENDGRID_FROM_EMAIL,
+      subject: "Benvenuto su StriveBlog",
+      text: "Grazie per esserti registrato sul nostro Blog",
+      html: "Grazie per esserti registrato sul nostro Blog"
+    }
+
+    await sendGrid.send(msg)
     res.status(201).json(savedAuthor);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -50,7 +64,7 @@ export async function updateAuthor(req, res) {
     const updatedAuthor = await Author.findByIdAndUpdate(
       id,
       { nome, cognome, email, dataDiNascita, avatar },
-      { returnDocument: "after" }
+      { returnDocument: "after" },
     );
     if (!updatedAuthor) {
       return res.status(404).json({ message: "author not found" });
@@ -83,7 +97,7 @@ export async function getAuthorBlogPosts(req, res) {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
-        message: "invalid id"
+        message: "invalid id",
       });
     }
 
@@ -91,17 +105,48 @@ export async function getAuthorBlogPosts(req, res) {
 
     if (!author) {
       return res.status(404).json({
-        message: "Author not found"
+        message: "Author not found",
       });
     }
 
     const posts = await postService.findByAuthor(author.email);
 
     res.status(200).json(posts);
-
   } catch (error) {
     res.status(500).json({
-      message: error.message
+      message: error.message,
     });
   }
 }
+
+export const uploadAvatar = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "invalid id" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "file not uploaded" });
+    }
+
+    const author = await Author.findByIdAndUpdate(
+      id,
+      {
+        avatar: req.file.path,
+      },
+      { returnDocument: "after" },
+    );
+
+    if (!author) {
+      return res.status(404).json({
+        message: "author not found",
+      });
+    }
+
+    res.status(200).json(author);
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};

@@ -1,5 +1,7 @@
 import { request, response } from "express";
 import postService from "../services/posts.js";
+import mongoose from "mongoose";
+import Posts from "../modules/posts/Post.js";
 
 const findAll = async (request, response) => {
   const { page = 1, pageSize = 10, title } = request.query;
@@ -153,6 +155,37 @@ const deletePost = async (request, response) => {
   }
 };
 
+export const uploadCover = async (request, response) => {
+  const { postId } = request.params;
+
+  try {
+    if (!mongoose.Types.ObjectId.isValid(postId)) {
+      return response.status(400).json({ message: "invalid id" });
+    }
+
+    if (!request.file) {
+      return response.status(400).json({ message: "file not uploaded" });
+    }
+
+    const post = await Posts.findByIdAndUpdate(
+      postId,
+      {
+        cover: request.file.path,
+      },
+      { returnDocument: "after" },
+    );
+
+    if (!post) {
+      return response.status(404).json({
+        message: "post not found",
+      });
+    }
+
+    response.status(200).json(post);
+  } catch (e) {
+    response.status(500).json({ message: e.message });
+  }
+};
 
 export default {
   findAll,
@@ -160,4 +193,5 @@ export default {
   create,
   updatePost,
   deletePost,
+  uploadCover,
 };
