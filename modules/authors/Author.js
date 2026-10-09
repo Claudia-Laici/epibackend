@@ -10,8 +10,8 @@ const authorSchema = new mongoose.Schema({
   cognome: {
     type: String,
     required: true,
-    minlenght: 2,
-    maxlenght: 50,
+    minlength: 2,
+    maxlength: 50,
   },
   email: {
     type: String,
@@ -24,6 +24,11 @@ const authorSchema = new mongoose.Schema({
   avatar: {
     type: String,
   },
+  posts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'post',
+    default: [],
+  }]
 });
 
 const Author = mongoose.model("Author", authorSchema);

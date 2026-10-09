@@ -1,11 +1,16 @@
 import mongoose from "mongoose";
 import postService from "../services/posts.js";
 import Author from "../modules/authors/Author.js";
-import sendGrid from "@sendgrid/mail"
+import sendGrid from "@sendgrid/mail";
 
 export async function getAllAuthors(req, res) {
+  const { page = 1, pageSize = 10 } = req.query;
   try {
-    const authors = await Author.find();
+    const authors = await Author.find()
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
+      .populate("posts", "title category");
+
     res.status(200).json(authors);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -20,16 +25,16 @@ export async function createAuthors(req, res) {
 
     const savedAuthor = await author.save();
 
-    sendGrid.setApiKey(process.env.SENDGRID_API_KEY)
+    sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: author.email,
-       from: process.env.SENDGRID_FROM_EMAIL,
+      from: process.env.SENDGRID_FROM_EMAIL,
       subject: "Benvenuto su StriveBlog",
       text: "Grazie per esserti registrato sul nostro Blog",
-      html: "Grazie per esserti registrato sul nostro Blog"
-    }
+      html: "Grazie per esserti registrato sul nostro Blog",
+    };
 
-    await sendGrid.send(msg)
+    await sendGrid.send(msg);
     res.status(201).json(savedAuthor);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -109,7 +114,7 @@ export async function getAuthorBlogPosts(req, res) {
       });
     }
 
-    const posts = await postService.findByAuthor(author.email);
+    const posts = await postService.findByAuthor(author._id);
 
     res.status(200).json(posts);
   } catch (error) {

@@ -13,6 +13,6 @@ PostsRouter.patch("/:postId", postsController.updatePost);
 PostsRouter.patch("/:postId/cover", uploadImg.single("cover"),postsController.uploadCover,
 );
 
-PostsRouter.delete("/:postId", postsController.deletePost);
+PostsRouter.delete("/posts/:postId", postsController.deletePost);
 
 export default PostsRouter;

@@ -6,6 +6,7 @@ import "dotenv/config";
 
 import AuthorRouter from "./routes/authors.js";
 import PostsRouter from "./routes/posts.js";
+import CommentsRouter from "./routes/comments.js";
 
 dns.setServers(["8.8.8.8"]);
 
@@ -30,6 +31,7 @@ server.get("/", (req, res) => {
 server.use("/authors", AuthorRouter);
 server.use("/posts", PostsRouter);
 server.use("/blogPosts", PostsRouter);
+server.use("/blogPosts", CommentsRouter);
 
 server.listen(process.env.PORT, () => {
     console.log(`Server up and running on port ${process.env.PORT}`);
