@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import BlogItem from "../blog-item/BlogItem";
+import { apiFetch } from "../../../utils/apiFetch";
 
 const BlogList = ({ search }) => {
   const [posts, setPosts] = useState([]);
@@ -8,21 +9,14 @@ const BlogList = ({ search }) => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const url = search
-          ? `http://localhost:9099/blogPosts?title=${search}`
-          : "http://localhost:9099/posts";
+        const endpoint = search ? `/blogPosts?title=${search}` : "/posts";
 
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!response.ok) {
-          setPosts([]);
-          return;
-        }
+        const data = await apiFetch(endpoint);
 
         setPosts(search ? data.posts : data.items);
       } catch (error) {
-        console.error(error);
+        console.error("Errore nel recupero degli articoli:", error);
+        setPosts([]);
       }
     };
 

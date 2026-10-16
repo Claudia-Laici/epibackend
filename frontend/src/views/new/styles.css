@@ -8,3 +8,11 @@
   height: 400px;
   margin-bottom: 80px;
 }
+
+
+.new-blog-alert {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: min(90%, 500px);
+}

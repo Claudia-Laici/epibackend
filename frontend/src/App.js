@@ -5,15 +5,24 @@ import Home from "./views/home/Home";
 import Blog from "./views/blog/Blog";
 import NewBlogPost from "./views/new/New";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./views/login/Login";
+import Register from "./views/register/Register";
+import EditBlogPost from "./views/editBlogPost/EditBlogPost";
+import PrivateRoute from "./components/privateRoute/PrivateRoute";
 
 function App() {
   return (
     <Router>
       <NavBar />
       <Routes>
-        <Route path="/" exact element={<Home />} />
-        <Route path="/blog/:id" element={<Blog />} />
-        <Route path="/new" element={<NewBlogPost />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/blog/:id" element={<Blog />} />
+          <Route path="/new" element={<NewBlogPost />} />
+          <Route path="/blog/:id/edit" element={<EditBlogPost />} />
+        </Route>
       </Routes>
       <Footer />
     </Router>
