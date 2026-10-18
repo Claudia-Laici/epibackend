@@ -14,7 +14,6 @@ const BlogComments = ({ postId }) => {
   const [editRating, setEditRating] = useState(5);
   const [savingEdit, setSavingEdit] = useState(false);
 
-
   const fetchCurrentUser = useCallback(async () => {
     try {
       const data = await apiFetch("/auth/me");
@@ -23,7 +22,6 @@ const BlogComments = ({ postId }) => {
       console.error(error);
     }
   }, []);
-
 
   const fetchComments = useCallback(async () => {
     setCommentsLoading(true);
@@ -44,7 +42,6 @@ const BlogComments = ({ postId }) => {
     fetchComments();
     fetchCurrentUser();
   }, [fetchComments, fetchCurrentUser]);
-
 
   const handleCommentSubmit = async (event) => {
     event.preventDefault();
@@ -79,26 +76,22 @@ const BlogComments = ({ postId }) => {
     }
   };
 
+  const handleEdit = async (comment) => {
+    try {
+      const data = await apiFetch(
+        `/blogPosts/${postId}/comments/${comment._id}`,
+      );
 
-  
-const handleEdit = async (comment) => {
-  try {
-    const data = await apiFetch(
-      `/blogPosts/${postId}/comments/${comment._id}`
-    );
+      const selectedComment = data.comment;
 
-    const selectedComment = data.comment;
-
-    setEditingCommentId(selectedComment._id);
-    setEditText(selectedComment.text);
-    setEditRating(selectedComment.rate);
-  } catch (error) {
-    console.error("Errore nel recupero del commento:", error);
-    setCommentMessage("Impossibile recuperare il commento.");
-  }
-};
-
-
+      setEditingCommentId(selectedComment._id);
+      setEditText(selectedComment.text);
+      setEditRating(selectedComment.rate);
+    } catch (error) {
+      console.error("Errore nel recupero del commento:", error);
+      setCommentMessage("Impossibile recuperare il commento.");
+    }
+  };
 
   const handleEditSubmit = async (event) => {
     event.preventDefault();

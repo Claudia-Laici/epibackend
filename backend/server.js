@@ -17,7 +17,12 @@ import googleStrategy from "./strategies/google.js";
 dns.setServers(["8.8.8.8"]);
 
 const server = express();
-server.use(cors());
+
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',')
+
+server.use(cors({
+   origin: allowedOrigins
+}));
 
 server.use(express.json());
 
