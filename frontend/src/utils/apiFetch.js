@@ -12,6 +12,14 @@ export const apiFetch = async (endpoint, options = {}) => {
 
   const data = await response.json();
 
+  if (response.status === 401 && token) {
+    localStorage.removeItem("token");
+    alert("Sessione scaduta. Effettua nuovamente il login.");
+    window.location.href = "/login";
+
+    throw new Error("Sessione scaduta");
+  }
+
   if (!response.ok) {
     throw new Error(data.message || "Errore nella richiesta");
   }

@@ -13,6 +13,12 @@ export async function login(request, response) {
       return response.status(401).json({ message: "wrong credential" });
     }
 
+    if (!author.password) {
+  return response.status(401).json({
+    message: "Questo account utilizza Google. Accedi con Google.",
+  });
+}
+
     const result = await bcrypt.compare(password, author.password);
 
     if (!result) {
