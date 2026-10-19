@@ -1,13 +1,13 @@
+const fieldLabels = {
+  title: "il titolo",
+  category: "la categoria",
+  content: "il contenuto",
+  "readTime.value": "il tempo di lettura",
+  "readTime.unit": "l'unità del tempo di lettura",
+};
+
 const errorHandler = (err, req, res, next) => {
   if (err.name === "ValidationError") {
-    const fieldLabels = {
-      title: "il titolo",
-      category: "la categoria",
-      content: "il contenuto",
-      "readTime.value": "il tempo di lettura",
-      "readTime.unit": "l'unità del tempo di lettura",
-    };
-
     const messages = Object.values(err.errors).map((error) => {
       const field = fieldLabels[error.path] || error.path;
 
